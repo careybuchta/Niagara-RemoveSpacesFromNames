@@ -1,0 +1,71 @@
+/* Auto-generated ProgramImpl Code */
+
+import java.util.*;              /* java Predefined*/
+import javax.baja.nre.util.*;    /* nre Predefined*/
+import javax.baja.sys.*;         /* baja Predefined*/
+import javax.baja.status.*;      /* baja Predefined*/
+import javax.baja.util.*;        /* baja Predefined*/
+import com.tridium.program.*;    /* program-rt Predefined*/
+import javax.baja.collection.*;  /* baja User Defined*/
+import javax.baja.naming.*;      /* baja User Defined*/
+import javax.baja.control.*;     /* control-rt User Defined*/
+import javax.baja.driver.*;      /* driver-rt User Defined*/
+
+public class ProgramImpl
+  extends com.tridium.program.ProgramBase
+{
+
+////////////////////////////////////////////////////////////////
+// Getters
+////////////////////////////////////////////////////////////////
+
+  public BStatusBoolean getReplaceSpaceWith() { return (BStatusBoolean)get("replaceSpaceWith"); }
+
+////////////////////////////////////////////////////////////////
+// Setters
+////////////////////////////////////////////////////////////////
+
+  public void setReplaceSpaceWith(javax.baja.status.BStatusBoolean v) { set("replaceSpaceWith", v); }
+
+////////////////////////////////////////////////////////////////
+// Program Source
+////////////////////////////////////////////////////////////////
+
+  
+  
+  public void onExecute() throws Exception
+  {
+  
+    String oldName;
+    String newName;
+    boolean replacement = getReplaceSpaceWith().getValue();
+  
+    BITable table = (BITable)BOrd.make("station:|slot:/Drivers|bql:select * from baja:Component").get();
+    TableCursor<BComponent> cursor = table.cursor();
+    
+    while(cursor.next())
+    {
+      BComponent c = (BComponent)cursor.get();
+  
+      if (c instanceof BControlPoint || c instanceof BDevice)
+      {
+      
+        oldName = c.getName();
+        
+        if (replacement)
+        {
+          newName = oldName.replace("$20", "_");
+        }
+        else
+        {
+          newName = oldName.replace("$20", "");
+        }
+        
+        BComponent pointParent = (BComponent)c.getParent();
+        pointParent.rename(pointParent.getProperty(oldName), newName);
+        
+      }
+    }
+    cursor.close();
+  } 
+}
